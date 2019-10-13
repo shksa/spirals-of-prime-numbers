@@ -1,0 +1,50 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  height: 100vh;
+  background-color: azure;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+#prime-spirals-svg-container {
+
+}
+
+#axes-tick-text {
+  font-size: 10px;
+  fill: white;
+}
+
+#point {
+  fill: mediumaquamarine;
+}
+
+#point-label {
+  font-size: 13px;
+  fill: white;
+}
+
+#spiral-path {
+  stroke: white;
+  stroke-width: 1;
+  fill: transparent;
+}
+
+#plane-zoom-level-input-label {
+  position: absolute;
+  right: 50px;
+  top: 50px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+#plane-zoom-level-input {
+  margin-left: 10px;
+}
