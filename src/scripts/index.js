@@ -35,7 +35,7 @@ function drawPrimeSpirals() {
     const {
       status, 
       pixelPositionOfPointInsideTheSvgPlane
-    } = drawPointOnPlaneUsingPolarCoordinate({polarCoordinate: matchingPrimePolarCoordinate, pointRadius: 600})
+    } = drawPointOnPlaneUsingPolarCoordinate({polarCoordinate: matchingPrimePolarCoordinate, pointRadius: 1000})
     
     if (status === 'point is over the plane') {
       nextResultOfPrimeNumberGenerator = primeNumberGenerator.return()
