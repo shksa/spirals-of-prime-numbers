@@ -2,7 +2,7 @@
   "name": "prime-spirality",
   "version": "1.0.0",
   "description": "prime spirals. das it.",
-  "main": "index.html",
+  "main": "src/index.html",
   "author": "sreekar",
   "license": "MIT",
   "private": false,
@@ -10,8 +10,8 @@
     "parcel-bundler": "^1.12.4"
   },
   "scripts": {
-    "start": "parcel index.html",
-    "build": "parcel build index.html"
+    "start": "parcel ./src/index.html",
+    "build": "parcel build ./src/index.html"
   },
   "browserslist": [
     "last 3 Chrome versions"
