@@ -20,6 +20,10 @@ body {
   fill: white;
 }
 
+#axes-tick-point {
+  fill: white;
+}
+
 #point {
   fill: mediumaquamarine;
 }
@@ -35,16 +39,19 @@ body {
   fill: transparent;
 }
 
-#plane-zoom-level-input-label {
+.controls {
   position: absolute;
-  right: 50px;
-  top: 50px;
   font-size: 20px;
   display: flex;
   align-items: center;
   padding: 10px;
+  right: 50px;
 }
 
-#plane-zoom-level-input {
-  margin-left: 10px;
+.controls:nth-of-type(1) {
+  top: 50px;
+}
+
+.controls:nth-of-type(2) {
+  top: 100px;
 }

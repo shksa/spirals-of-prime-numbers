@@ -1,64 +1,93 @@
-import { makePrimeNumberGenerator } from './utils'
-import { primeSpiralsSVGcontainer, svgNS, zoomLevelInputElement } from './setup'
-import { drawAxesTicksForThePlane } from './axes'
-import { getPixelPositionFromPolarCoordinate, drawPointOnPlaneUsingPolarCoordinate } from './point'
+import { makePrimeNumberGenerator, makeNumberGenerator } from './utils'
+import { 
+  primeSpiralsSVGcontainer, svgNS, zoomLevelInputElement, appState, planeUnitScaleInputElement, thePlane
+} from './init'
+import { createAxesTicksVirtualElements } from './axes'
+import { 
+  getPixelPositionFromPolarCoordinate, createVirtualPointOnPlaneUsingPolarCoordinate, createVirtualPointOnPlaneUsingCartesianCoordinate 
+} from './point'
+import * as vdom from './vdom'
 
-function getQcontrolPointPixelPosition({pointAinPolar, pointBinPolar}) {
-  const dθ = pointBinPolar.θ - pointAinPolar.θ
-  const controlPointInPolar = {r: pointBinPolar.r + 1, θ: pointAinPolar.θ + (dθ / 2)}
-  const controlPointPixelPosition = getPixelPositionFromPolarCoordinate({polarCoordinate: controlPointInPolar})
-  return controlPointPixelPosition
+// function getQcontrolPointPixelPosition({pointAinPolar, pointBinPolar}) {
+//   const dθ = pointBinPolar.θ - pointAinPolar.θ
+//   const controlPointInPolar = {r: pointBinPolar.r + 1, θ: pointAinPolar.θ + (dθ / 2)}
+//   const controlPointPixelPosition = getPixelPositionFromPolarCoordinate({polarCoordinate: controlPointInPolar})
+//   return controlPointPixelPosition
+// }
+function removeAllChildren(params) {
+  primeSpiralsSVGcontainer.innerHTML = ''
 }
 
-// zoomLevelInputElement.onchange = function handleZoomLevelChange(evt) {
-//   const newZoomLevel = evt.target.value
-//   console.log({newZoomLevel})
-//   primeSpiralsSVGcontainer.setAttribute('viewBox', `0 0 ${newZoomLevel} ${newZoomLevel}`)
-// }
+function createCircularPlane(params) {
+  const circularPlane = document.createElementNS(svgNS, 'circle')
+  circularPlane.setAttribute('cx', 0)
+  circularPlane.setAttribute('cy', 0)
+  circularPlane.setAttribute('r', '50%')
+  primeSpiralsSVGcontainer.appendChild(circularPlane)
+  appState.thePlane = circularPlane
+}
 
-function drawPrimeSpirals() {
+zoomLevelInputElement.onchange = function handleZoomLevelChange(evt) {
+  const newZoomLevel = Number(evt.target.value)
+  console.log({newZoomLevel})
+  const multiplicationFactorForPlaneReCentering = newZoomLevel / appState.initZoomLevel
+  appState.planeCenterPixelPosition.x = appState.initPixelPositionOfCenterOfPlane.x * multiplicationFactorForPlaneReCentering
+  appState.planeCenterPixelPosition.y = appState.initPixelPositionOfCenterOfPlane.y * multiplicationFactorForPlaneReCentering
+  primeSpiralsSVGcontainer.setAttribute('viewBox', `${-(newZoomLevel/2)} ${-(newZoomLevel/2)} ${newZoomLevel} ${newZoomLevel}`)
+  const newPointRadius = appState.initPointRadius * multiplicationFactorForPlaneReCentering
+  appState.currentPointRadius = newPointRadius
+  // removeAllChildren()
+  // createCircularPlane()
+  // createAxesTicksVirtualElements()
+  vdom.addElementListInsidePlane(createVirtualElementListForPrimesInPolarForm())
+}
+
+planeUnitScaleInputElement.onchange = function handlePlaneUnitScaleChange(evt) {
+  const newPlaneUnitScale = Number(evt.target.value)
+  console.log({newPlaneUnitScale})
+  appState.planeUnitScale = newPlaneUnitScale
+  // removeAllChildren()
+  // createCircularPlane()
+  vdom.addElementListInsidePlane(createVirtualElementListForPrimesInPolarForm())
+  // vdom.addElementListInsidePlane(createAxesTicksVirtualElements())
+}
+
+function createVirtualElementListForPrimesInPolarForm(pointRadius = appState.currentPointRadius) {
+  const virtualElements = []
+
   const primeNumberGenerator = makePrimeNumberGenerator()
-  
-  // let previousPolarCoordinate = {r: 1, θ: 1}
-  
-  // const pixelPositionOfPreviousPolarCoordinate = getPixelPositionFromPolarCoordinate({polarCoordinate: previousPolarCoordinate})
-  
-  // let spiralPathShape = `M ${pixelPositionOfPreviousPolarCoordinate.x} ${pixelPositionOfPreviousPolarCoordinate.y}`
 
   let nextResultOfPrimeNumberGenerator = primeNumberGenerator.next()
   
   while (!nextResultOfPrimeNumberGenerator.done) {
     const nextPrimeNumber = nextResultOfPrimeNumberGenerator.value
     
-    const matchingPrimePolarCoordinate = {r: nextPrimeNumber, θ: nextPrimeNumber}
+    const matchingPrimePolarCoordinate = {
+      r: nextPrimeNumber,
+      θ: nextPrimeNumber
+    }
     
-    const {
-      status, 
-      pixelPositionOfPointInsideTheSvgPlane
-    } = drawPointOnPlaneUsingPolarCoordinate({polarCoordinate: matchingPrimePolarCoordinate, pointRadius: 1000})
+    const { status, virtualElement } = createVirtualPointOnPlaneUsingPolarCoordinate({
+      polarCoordinate: matchingPrimePolarCoordinate, pointRadius, showLabel: false
+    })
     
     if (status === 'point is over the plane') {
       nextResultOfPrimeNumberGenerator = primeNumberGenerator.return()
+    } else {
+      virtualElements.push(virtualElement)
+      nextResultOfPrimeNumberGenerator = primeNumberGenerator.next() 
     }
-    
-    // const quadraticCurveControlPointPixelPosition = getQcontrolPointPixelPosition({
-    //   pointAinPolar: previousPolarCoordinate,
-    //   pointBinPolar: matchingPrimePolarCoordinate
-    // })
-    
-    // spiralPathShape += ` Q ${quadraticCurveControlPointPixelPosition.x} ${quadraticCurveControlPointPixelPosition.y}, ${pixelPositionOfPointInsideTheSvgPlane.x} ${pixelPositionOfPointInsideTheSvgPlane.y}`
-    
-    // previousPolarCoordinate = matchingPrimePolarCoordinate
-    
-    nextResultOfPrimeNumberGenerator = primeNumberGenerator.next()
   }
   
-  // const spiralPath = document.createElementNS(svgNS, 'path')
-  // spiralPath.id = 'spiral-path'
-  // spiralPath.setAttribute('d', spiralPathShape)
-  // primeSpiralsSVGcontainer.appendChild(spiralPath)
+  return virtualElements
 }
 
-drawAxesTicksForThePlane()
+vdom.addElementListInsidePlane(createVirtualElementListForPrimesInPolarForm())
 
-drawPrimeSpirals()
+// vdom.addElementListInsidePlane(createAxesTicksVirtualElements())
+
+// drawPrimeSpirals()
+
+// drawPointOnPlaneUsingCartesianCoordinate({
+//   cartesianCoordinate: {x: 4, y: 4}
+// })

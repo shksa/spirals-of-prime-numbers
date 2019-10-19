@@ -8,14 +8,22 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <svg id="prime-spirals-svg-container" height="800" width="800" viewBox="0 0 1000000 1000000">
-    <circle cx="50%" cy="50%" r="50%" />
-    <line x1="50%" y1="0" x2="50%" y2="100%" stroke="white"/>
-    <line x1="0" y1="50%" x2="100%" y2="50%" stroke="white"/>
+  <svg 
+    id="prime-spirals-svg-container" 
+    height="800" 
+    width="800" 
+    viewBox="-400 -400 800 800"
+  >
+    <circle cx="0" cy="0" r="50%" id="cartesian-plane"/>
+    <!-- <line x1="50%" y1="0" x2="50%" y2="100%" stroke="white"/> -->
+    <!-- <line x1="0" y1="50%" x2="100%" y2="50%" stroke="white"/> -->
   </svg>
-  <!-- <label id="plane-zoom-level-input-label">
-    Zoom level <input type="range" id="plane-zoom-level-input" min="800" max="8000" value="800"/>
-  </label> -->
+  <label class="controls">
+    Zoom level <input type="range" min="800" max="1000000" value="800"/>
+  </label>
+  <label class="controls">
+    Plane Unit to Pixel Scale level <input type="range" min="1" max="50" value="10"/>
+  </label>
   <script src="./scripts/index.js"></script>
 </body>
 </html>
