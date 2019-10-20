@@ -27,41 +27,48 @@ export function createVirtualPointOnPlaneUsingCartesianCoordinate({
   cartesianCoordinate = {x: 0, y: 0}, pointRadius = appState.initPointRadius, 
   pointLabelText = null, key
 }) {
+  let status, pointLabelVirtualElement = null, pointVirtualElement = null
+
   const pixelPositionOfPointInsideTheSvgPlane = getPixelPositionInsideTheSvgPlane({cartesianCoordinate})
-  const isTrue = isPointOutOfPlane({pixelPositionOfPointInsideTheSvgPlane})
-  if (isTrue) {
+  
+  if (isPointOutOfPlane({pixelPositionOfPointInsideTheSvgPlane})) {
     return {
       status: 'point is over the plane',
-      virtualElement: null
+      pointVirtualElement,
+      pointLabelVirtualElement
     }
   }
 
-  const virtualElement = {
+  pointVirtualElement = {
+    type: 'circle',
     key,
-    cx: pixelPositionOfPointInsideTheSvgPlane.x,
-    cy: pixelPositionOfPointInsideTheSvgPlane.y,
-    r: pointRadius,
-    id: 'point'
+    attributes: {
+      cx: pixelPositionOfPointInsideTheSvgPlane.x,
+      cy: pixelPositionOfPointInsideTheSvgPlane.y,
+      r: pointRadius,
+      id: 'point',
+      key
+    }
   }
-  // const {x, y} = pixelPositionOfPointInsideTheSvgPlane
-  // const point = document.createElementNS(svgNS, 'circle')
-  // point.id = 'point'
-  // point.setAttribute('cx', x)
-  // point.setAttribute('cy', y)
-  // point.setAttribute('r', pointRadius)
-  // // console.log({point})
-  // if (pointLabelText) {
-  //   const pointLabelElement = document.createElementNS(svgNS, 'text')
-  //   pointLabelElement.id = 'point-label'
-  //   pointLabelElement.setAttribute('x', x + 2)
-  //   pointLabelElement.setAttribute('y', y - 5)
-  //   pointLabelElement.appendChild(document.createTextNode(pointLabelText))
-  //   primeSpiralsSVGcontainer.appendChild(pointLabelElement)
-  // }
-  // primeSpiralsSVGcontainer.appendChild(point)
+  
+  if (pointLabelText) {
+    pointLabelVirtualElement = {
+      type: 'text',
+      child: pointLabelText,
+      key: `${pointLabelText}-${key}`,
+      attributes: {
+        id: 'point-label',
+        x: pixelPositionOfPointInsideTheSvgPlane.x + 2,
+        y: pixelPositionOfPointInsideTheSvgPlane.y - 5,
+        key
+      }
+    }
+  }
+  
   return {
     status: 'successfull placed point in the plane',
-    virtualElement
+    pointVirtualElement,
+    pointLabelVirtualElement
   }
 }
 

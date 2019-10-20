@@ -2,14 +2,15 @@ import { thePlane, primeSpiralsSVGcontainer, svgNS } from "./init";
 
 export const primeSpiralsSvgContainerChildrenMap = {}
 
-function createSvgPointElement({cx, cy, r, key, id}) {
-  const point = document.createElementNS(svgNS, 'circle')
-  point.setAttribute('cx', cx)
-  point.setAttribute('cy', cy)
-  point.setAttribute('r', r)
-  point.setAttribute('key', key)
-  point.setAttribute('id', id)
-  return point
+function createSvgElement(virtualElement) {
+  const element = document.createElementNS(svgNS, virtualElement.type)
+  Object.entries(virtualElement.attributes).forEach(([attributeName, attributeValue]) => {
+    element.setAttribute(attributeName, attributeValue)
+  })
+  if (virtualElement.child) {
+    element.appendChild(document.createTextNode(virtualElement.child))
+  }
+  return element
 }
 
 function isElementAlreadyCreated(virtualElement) {
@@ -21,21 +22,20 @@ function isElementAlreadyCreated(virtualElement) {
   return false
 }
 
-function modifyCircleElementAttributes(virtualElement) {
+function updateElementAttributes(virtualElement) {
   const element = primeSpiralsSvgContainerChildrenMap[virtualElement.key]
-  const {cx, cy, r} = virtualElement
-  element.setAttribute('cx', cx)
-  element.setAttribute('cy', cy)
-  element.setAttribute('r', r)
+  Object.entries(virtualElement.attributes).forEach(([attributeName, attributeValue]) => {
+    element.setAttribute(attributeName, attributeValue)
+  })
   element.setAttribute('visibility', 'visible')
 }
 
 export function addElementInsidePrimeSpiralsSVG(virtualElement) {
   if (isElementAlreadyCreated(virtualElement)) {
-    modifyCircleElementAttributes(virtualElement)
+    updateElementAttributes(virtualElement)
     return
   }
-  const element = createSvgPointElement(virtualElement)
+  const element = createSvgElement(virtualElement)
   primeSpiralsSvgContainerChildrenMap[virtualElement.key] = element
   primeSpiralsSVGcontainer.appendChild(element)
 }
